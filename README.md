@@ -13,9 +13,7 @@ It took about three hours for Racket to grow on me. I know with a fair amount of
 
 ### Installation
 
-Cloning the repository directly into your Packages directory is simplest.
-
-    git clone https://github.com/andkerosine/rainbowth.git Rainbowth
+Clone this repository directly into your Packages directory.
 
 ### Configuration
 
