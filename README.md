@@ -3,7 +3,7 @@ Rainbowth
 
 ### What is this?
 
-Rainbowth is a Sublime Text 2 plugin that automagically highlights matching parentheses in Lisp source code. While the name does imply a certain sequence of colors, the palette used to paint them is entirely configurable; nonetheless, the effect is perhaps best demonstrated when viewed with a theme like [Tomorrow Night](https://github.com/chriskempson/tomorrow-theme/tree/master/textmate):
+Rainbowth is a Sublime Text 3 plugin that automagically highlights matching parentheses in Lisp source code. While the name does imply a certain sequence of colors, the palette used to paint them is entirely configurable; nonetheless, the effect is perhaps best demonstrated when viewed with a theme like [Tomorrow Night](https://github.com/chriskempson/tomorrow-theme/tree/master/textmate):
 
 ![img](http://i.imgur.com/ja50Z.png)
 
