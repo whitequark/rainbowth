@@ -8,7 +8,7 @@ class Rainbowth(sublime_plugin.EventListener):
     scheme_name = scheme_path.split('/')[-1].split('.')[0]
 
     try:
-      with open(cache_file_path, 'r') as cache_file:
+      with open(cache_file_path, 'rb') as cache_file:
         cache = pickle.load(cache_file)
     except EnvironmentError:
       cache = {}
