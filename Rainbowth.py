@@ -7,8 +7,9 @@ class Rainbowth(sublime_plugin.EventListener):
     scheme_name = scheme_path.split('/')[-1].split('.')[0]
 
     try:
-      cache = pickle.load(open(base_dir + '/Rainbowth/Rainbowth.cache', 'r'))
-    except:
+      with open(base_dir + '/Rainbowth/Rainbowth.cache', 'r') as cache_file:
+        cache = pickle.load(cache_file)
+    except EnvironmentError:
       cache = {}
 
     settings = sublime.load_settings('Rainbowth.sublime-settings')
@@ -17,8 +18,8 @@ class Rainbowth(sublime_plugin.EventListener):
     if self.colors == cache.get(scheme_name, None):
       return
 
-    scheme_file = open(scheme_path, 'r')
-    scheme_xml = scheme_file.read()#.decode('utf-8')
+    with open(scheme_path, 'r') as scheme_file:
+      scheme_xml = scheme_file.read()#.decode('utf-8')
 
     bg = re.search('background.+?g>(.+?)<', scheme_xml, re.DOTALL).group(1)
     bg = '#%06x' % max(1, (int(bg[1:], 16) - 1))
@@ -30,11 +31,11 @@ class Rainbowth(sublime_plugin.EventListener):
       rainbowth += fragment % (i, c)
 
     scheme_xml = re.sub('</array>', rainbowth + '<!---->\n\t</array>', scheme_xml)
-    scheme_file = open(scheme_path, 'w')
-    scheme_file.write(scheme_xml)#.encode('utf-8'))
-    scheme_file.close()
+    with open(scheme_path, 'w') as scheme_file:
+      scheme_file.write(scheme_xml)#.encode('utf-8'))
     cache[scheme_name] = self.colors
-    pickle.dump(cache, open(base_dir + '/Rainbowth/Rainbowth.cache', 'wb'))
+    with open(base_dir + '/Rainbowth/Rainbowth.cache', 'wb') as cache_file:
+      pickle.dump(cache, cache_file)
 
   def on_load(self, view):
     file_scope = view.scope_name(0)
