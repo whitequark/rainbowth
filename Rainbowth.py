@@ -36,11 +36,10 @@ class Rainbowth(sublime_plugin.EventListener):
       scheme_file.write(scheme_xml)#.encode('utf-8'))
     cache[scheme_name] = self.colors
 
-    try:
+    cache_file_folder = os.path.split(cache_file_path)[0]
+    if not os.path.exists(cache_file_folder):
       # ensure folder exists for cache file
-      os.makedirs(os.path.split(cache_file_path)[0])
-    except OSError:
-      pass # folder exists, that's ok
+      os.makedirs(cache_file_folder)
 
     with open(cache_file_path, 'wb') as cache_file:
       pickle.dump(cache, cache_file)
