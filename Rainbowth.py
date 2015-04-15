@@ -6,11 +6,11 @@ class Rainbowth(sublime_plugin.EventListener):
     scheme_path = base_dir[:-8] + view.settings().get('color_scheme')
     scheme_name = scheme_path.split('/')[-1].split('.')[0]
 
-    with open(base_dir + '/Rainbowth/Rainbowth.cache', 'r') as cache_file:
-      try:
+    try:
+      with open(base_dir + '/Rainbowth/Rainbowth.cache', 'r') as cache_file:
         cache = pickle.load(cache_file)
-      except:
-        cache = {}
+    except EnvironmentError:
+      cache = {}
 
     settings = sublime.load_settings('Rainbowth.sublime-settings')
     palettes = settings.get('palettes')
