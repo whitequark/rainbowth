@@ -2,12 +2,13 @@ import sublime, sublime_plugin, re, pickle, os
 
 class Rainbowth(sublime_plugin.EventListener):
   def update_colors(self, view):
+    cache_file_path = os.path.join(sublime.cache_path(), 'Rainbowth', 'Rainbowth' + '.cache')
     base_dir = sublime.packages_path()
     scheme_path = base_dir[:-8] + view.settings().get('color_scheme')
     scheme_name = scheme_path.split('/')[-1].split('.')[0]
 
     try:
-      with open(base_dir + '/Rainbowth/Rainbowth.cache', 'r') as cache_file:
+      with open(cache_file_path, 'rb') as cache_file:
         cache = pickle.load(cache_file)
     except EnvironmentError:
       cache = {}
@@ -34,7 +35,13 @@ class Rainbowth(sublime_plugin.EventListener):
     with open(scheme_path, 'w') as scheme_file:
       scheme_file.write(scheme_xml)#.encode('utf-8'))
     cache[scheme_name] = self.colors
-    with open(base_dir + '/Rainbowth/Rainbowth.cache', 'wb') as cache_file:
+
+    cache_file_folder = os.path.split(cache_file_path)[0]
+    if not os.path.exists(cache_file_folder):
+      # ensure folder exists for cache file
+      os.makedirs(cache_file_folder)
+
+    with open(cache_file_path, 'wb') as cache_file:
       pickle.dump(cache, cache_file)
 
   def on_load(self, view):
