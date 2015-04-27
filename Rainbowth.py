@@ -44,7 +44,9 @@ class Rainbowth(sublime_plugin.EventListener):
     with open(cache_file_path, 'wb') as cache_file:
       pickle.dump(cache, cache_file)
 
-  def on_load(self, view):
+  # plugins are not loaded properly after a hot exit
+  # this causes problems with files opened automatically at boot
+  def on_activated(self, view):
     file_scope = view.scope_name(0)
     view.settings().set('lispy',
         file_scope.split('.')[1].split(' ')[0] in ['lisp', 'scheme', 'clojure'])
