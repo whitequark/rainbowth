@@ -47,12 +47,14 @@ class Rainbowth(sublime_plugin.EventListener):
   # plugins are not loaded properly after a hot exit
   # this causes problems with files opened automatically at boot
   def on_activated(self, view):
-    file_scope = view.scope_name(0)
-    view.settings().set('lispy',
-        file_scope.split('.')[1].split(' ')[0] in ['lisp', 'scheme', 'clojure'])
-    if view.settings().get('lispy'):
-      self.update_colors(view)
-      self.on_modified(view, True)
+    if not view.settings().get('rainbowthed'):
+      file_scope = view.scope_name(0)
+      view.settings().set('lispy',
+          file_scope.split('.')[1].split(' ')[0] in ['lisp', 'scheme', 'clojure'])
+      if view.settings().get('lispy'):
+        self.update_colors(view)
+        self.on_modified(view, True)
+        view.settings().set('rainbowthed', True)
 
   def on_modified(self, view, load = False):
     if not view.settings().get('lispy'):
