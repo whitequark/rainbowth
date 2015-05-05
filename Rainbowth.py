@@ -1,4 +1,4 @@
-import sublime, sublime_plugin, re, pickle, os
+import sublime, sublime_plugin, re, json, os
 
 class Rainbowth(sublime_plugin.EventListener):
   def update_colors(self, view):
@@ -8,9 +8,9 @@ class Rainbowth(sublime_plugin.EventListener):
     scheme_name = scheme_path.split('/')[-1].split('.')[0]
 
     try:
-      with open(cache_file_path, 'rb') as cache_file:
-        cache = pickle.load(cache_file)
-    except EnvironmentError:
+      with open(cache_file_path, 'r') as cache_file:
+        cache = json.load(cache_file)
+    except (EnvironmentError, ValueError):
       cache = {}
 
     settings = sublime.load_settings('Rainbowth.sublime-settings')
@@ -41,8 +41,8 @@ class Rainbowth(sublime_plugin.EventListener):
       # ensure folder exists for cache file
       os.makedirs(cache_file_folder)
 
-    with open(cache_file_path, 'wb') as cache_file:
-      pickle.dump(cache, cache_file)
+    with open(cache_file_path, 'w') as cache_file:
+      json.dump(cache, cache_file)
 
   # plugins are not loaded properly after a hot exit
   # this causes problems with files opened automatically at boot
