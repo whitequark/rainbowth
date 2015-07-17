@@ -50,7 +50,7 @@ class Rainbowth(sublime_plugin.EventListener):
     if not view.settings().get('rainbowthed'):
       file_scope = view.scope_name(0)
       view.settings().set('lispy',
-          file_scope.split('.')[1].split(' ')[0] in ['lisp', 'scheme', 'clojure'])
+          file_scope.split('.')[1].split(' ')[0] in ['lisp', 'scheme', 'clojure', 'clojurescript'])
       if view.settings().get('lispy'):
         self.update_colors(view)
         self.on_modified(view, True)
