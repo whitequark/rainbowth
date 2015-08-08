@@ -15,6 +15,8 @@ It took about three hours for Racket to grow on me. I know with a fair amount of
 
 Install Rainbowth via [Package Control](https://packagecontrol.io/packages/Rainbowth), or clone this repository directly into your Packages directory.
 
+The color scheme must be unpacked in the user's `Packages` folder and writable for Rainbowth to be able to automatically insert its palette.
+
 ### Configuration
 
 The `palettes` setting is a mapping of theme names to the list of colors to use for painting parentheses while using that theme, outermost first. When using a theme not specified, the default ROYGBIV sequence will be used.
