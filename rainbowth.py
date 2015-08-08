@@ -1,4 +1,45 @@
 import sublime, sublime_plugin, re, json, os
+from collections import defaultdict
+
+class ViewInfo:
+    def __init__(self, color_count, per_line_depths):
+        self.keys = ['rainbowth{}'.format(index) for index in range(color_count)]
+        self.keys_lineHighlight = [scope + '-lineHighlight' for scope in self.keys]
+        self.per_line_depths = per_line_depths
+
+        self.prepared_regions = {}
+        for key in self.keys + self.keys_lineHighlight:
+            self.prepared_regions[key] = []
+
+        for line in self.per_line_depths:
+            depths = self.per_line_depths[line]
+            for depth, regions in enumerate(depths):
+                self.prepared_regions[self.keys[depth]] += regions
+
+    def update(self, old_highlighted_line, new_highlighted_line):
+        if old_highlighted_line is not None:
+            depths = self.per_line_depths[old_highlighted_line]
+            for depth, regions in enumerate(depths):
+                visible_regions = self.prepared_regions[self.keys_lineHighlight[depth]]
+                for region in regions:
+                    try: visible_regions.remove(region)
+                    except ValueError: pass
+                self.prepared_regions[self.keys[depth]] += regions
+
+        if new_highlighted_line is not None:
+            depths = self.per_line_depths[new_highlighted_line]
+            for depth, regions in enumerate(depths):
+                visible_regions = self.prepared_regions[self.keys[depth]]
+                for region in regions:
+                    try: visible_regions.remove(region)
+                    except ValueError: pass
+                self.prepared_regions[self.keys_lineHighlight[depth]] += regions
+
+    def highlight(self, view):
+        for key in self.prepared_regions:
+            view.erase_regions(key)
+            view.add_regions(key, self.prepared_regions[key],
+                             scope=key, flags=sublime.DRAW_NO_OUTLINE)
 
 class Rainbowth(sublime_plugin.EventListener):
     lispy_languages = ['lisp', 'scheme', 'clojure', 'clojurescript']
@@ -9,6 +50,7 @@ class Rainbowth(sublime_plugin.EventListener):
 
     def __init__(self):
         self.cache = None
+        self.view_infos = {}
 
     def read_cache(self):
         if self.cache is None:
@@ -30,21 +72,60 @@ class Rainbowth(sublime_plugin.EventListener):
         scheme_path = os.path.join(sublime_base_path, scheme_relative_path)
         return scheme_path, scheme_name
 
-    def colors_to_xml(self, colors):
+    def perturb_color(self, color):
+        """
+        Apply a minimal change to `color`, which must be in CSS hex format,
+        and return the modified color.
+        """
+        if color[0] == '#' and len(color) in (4, 7):
+            # Normalize to 6-digit hex.
+            color = re.sub('#(.)(.)(.)', r'#\1\1\2\2\3\3', color)
+
+            # Perturb.
+            color_value = int(color[1:], base=16)
+            if color_value < 0xffffff:
+                color_value += 1
+            else:
+                color_value -= 1
+            color = "#{:06x}".format(color_value)
+
+        return color
+
+    def get_setting(self, scheme_xml, setting):
+        # This is an awful hack, but even with a full-blown XML parser,
+        # parsing .tmTheme files is painful. Feel free to send a PR.
+        settings = re.search('<key>settings</key>\s*<dict>(.+?)</dict>',
+                             scheme_xml, flags=re.DOTALL).group(1)
+        value    = re.search('<key>{}</key>\s*<string>(.+?)</string>'.format(setting),
+                             settings, flags=re.DOTALL).group(1)
+        return value
+
+    def colors_to_xml(self, colors, background, lineHighlight):
         xml = []
 
-        # bg = re.search('background.+?g>(.+?)<', scheme_xml, re.DOTALL).group(1)
-        # bg = '#%06x' % max(1, (int(bg[1:], 16) - 1))
+        # If we don't perturb the background color, ST treats it as absent
+        # and refuses to change foreground color of the letters either.
+        # Instead, it uses the foreground color to draw the outline and fill.
+        background = self.perturb_color(background)
 
         for index, color in enumerate(colors):
             xml.append(
                 '<dict>'
-                    '<key>name</key><string>Rainbowth #{index}</string>'
                     '<key>scope</key><string>rainbowth{index}</string>'
                     '<key>settings</key><dict>'
-                        '<key>foreground</key><string>{color}</string>'
+                        '<key>foreground</key><string>{foreground}</string>'
+                        '<key>background</key><string>{background}</string>'
                     '</dict>'
-                '</dict>'.format(index=index, color=color))
+                '</dict>'
+                '<dict>'
+                    '<key>scope</key><string>rainbowth{index}-lineHighlight</string>'
+                    '<key>settings</key><dict>'
+                        '<key>foreground</key><string>{foreground}</string>'
+                        '<key>background</key><string>{lineHighlight}</string>'
+                    '</dict>'
+                '</dict>'
+                .format(index=index, foreground=color,
+                        background=background, lineHighlight=lineHighlight))
 
         return "".join(xml)
 
@@ -56,7 +137,7 @@ class Rainbowth(sublime_plugin.EventListener):
         colors = palettes.get(scheme_name, palettes['default'])
 
         self.read_cache()
-        if colors == self.cache.get(scheme_name, None):
+        if colors == self.cache.get(scheme_name, None) and False:
             # Already updated.
             return colors
 
@@ -64,12 +145,15 @@ class Rainbowth(sublime_plugin.EventListener):
         with open(scheme_path, 'r') as scheme_file:
             scheme_xml = scheme_file.read()
 
+        background = self.get_setting(scheme_xml, 'background')
+        lineHighlight = self.get_setting(scheme_xml, 'lineHighlight')
+
         # Cut out our old colors, if any.
         scheme_xml = re.sub('[ \t]+<!-- rainbowth -->.+\n', '', scheme_xml)
 
         # Insert our updated colors.
         rainbowth = '\t<!-- rainbowth -->{}<!-- /rainbowth -->'. \
-                    format(self.colors_to_xml(colors))
+                    format(self.colors_to_xml(colors, background, lineHighlight))
         scheme_xml = re.sub('</array>', rainbowth + '\n\t</array>', scheme_xml)
 
         with open(scheme_path, 'w') as scheme_file:
@@ -87,27 +171,54 @@ class Rainbowth(sublime_plugin.EventListener):
                 return True
         return False
 
-    def on_activated(self, view):
+    def on_activated_async(self, view):
         view.settings().set('rainbowth.lispy', self.is_written_in(view, self.lispy_languages))
         if view.settings().get('rainbowth.lispy'):
             colors = self.update_color_scheme(view)
             view.settings().set('rainbowth.colors', colors)
-            self.on_modified(view)
+            self.on_modified_async(view)
 
-    def on_modified(self, view):
+    def on_modified_async(self, view):
         if not view.settings().get('rainbowth.lispy'):
             return
         colors = view.settings().get('rainbowth.colors')
 
         level = -1
-        depths = [[] for _ in range(len(colors))]
+        per_line_depths = defaultdict(lambda: [[] for _ in range(len(colors))])
         for region in view.find_all('[\[\]()]'):
             char = view.substr(region)
+            line, _ = view.rowcol(region.a)
             if char in '([': level += 1
-            depths[level % len(colors)].append(region)
+            per_line_depths[line][level % len(colors)].append(region)
             if char in ')]': level -= 1
 
-        for index, regions in enumerate(depths):
-            key = 'rainbowth{}'.format(index)
-            view.erase_regions(key)
-            view.add_regions(key, regions, scope='rainbowth{}'.format(index))
+        self.view_infos[view.id()] = ViewInfo(len(colors), per_line_depths)
+        self.on_selection_modified(view, force=True)
+
+    def on_close(self, view):
+        del self.view_infos[view.id()]
+
+    def on_selection_modified(self, view, force=False):
+        if not view.settings().get('rainbowth.lispy'):
+            return
+        colors = view.settings().get('rainbowth.colors')
+
+        # Sublime does not permit us to set foreground color of a region
+        # without simultaneously filling its background, so we do this
+        # gross workaround: paint the background to the color it would have
+        # been otherwise. Since selection erases foreground colors of regions
+        # as well, we do this only for regular and current line backgrounds.
+
+        if len(view.sel()) == 1 and view.sel()[0].a == view.sel()[0].b:
+            highlighted_line, _ = view.rowcol(view.sel()[0].a)
+        else:
+            highlighted_line = None
+
+        old_highlighted_line = int(view.settings().get('rainbowth.line') or "-1")
+        if old_highlighted_line == highlighted_line and not force:
+            return
+        view.settings().set('rainbowth.line', highlighted_line)
+
+        view_info = self.view_infos[view.id()]
+        view_info.update(old_highlighted_line, highlighted_line)
+        view_info.highlight(view)
