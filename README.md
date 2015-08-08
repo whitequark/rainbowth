@@ -13,15 +13,11 @@ It took about three hours for Racket to grow on me. I know with a fair amount of
 
 ### Installation
 
-Clone this repository directly into your Packages directory.
+Install Rainbowth via [Package Control](https://packagecontrol.io/packages/Rainbowth), or clone this repository directly into your Packages directory.
 
 ### Configuration
 
 The `palettes` setting is a mapping of theme names to the list of colors to use for painting parentheses while using that theme, outermost first. When using a theme not specified, the default ROYGBIV sequence will be used.
-
-### Roadmap
-
-The plugin does not appear to cause any noticeable lag, but I didn't test it on any massive files. Still, there are a few places it could be improved. At present, only the current block is highlighted, and this happens after each keyed parenthesis (to ensure pasting works as expected). While this does suffice for the overall purpose of this plugin, highlighting the entire file seems like it'd be more aesthetically pleasing. This is made non-trivial by the fact that keeping track of each block would require attaching an index, which would glitch when inserting a block between two existing ones.
 
 ### Contributing
 
