@@ -83,7 +83,7 @@ class Rainbowth(sublime_plugin.EventListener):
         """
         if color[0] == '#' and len(color) in (4, 7):
             # Normalize to 6-digit hex.
-            color = re.sub('#(.)(.)(.)', r'#\1\1\2\2\3\3', color)
+            color = re.sub('^#(.)(.)(.)$', r'#\1\1\2\2\3\3', color)
 
             # Perturb.
             color_value = int(color[1:], base=16)
