@@ -24,7 +24,7 @@ class Rainbowth(sublime_plugin.EventListener):
 
     bg = re.search('background.+?g>(.+?)<', scheme_xml, re.DOTALL).group(1)
     bg = '#%06x' % max(1, (int(bg[1:], 16) - 1))
-    fragment = '<dict><key>scope</key><string>rainbowth%d</string><key>settings</key><dict><key>background</key><string>' + bg + '</string><key>foreground</key><string>%s</string></dict></dict>'
+    fragment = '<dict><key>scope</key><string>rainbowth%d</string><key>settings</key><dict><key>foreground</key><string>%s</string></dict></dict>'
     scheme_xml = re.sub('\t+<!-- rainbowth -->.+\n', '', scheme_xml)
 
     rainbowth = '\t<!-- rainbowth -->'
