@@ -17,6 +17,12 @@ class ViewInfo:
                 self.prepared_regions[self.keys[depth]] += regions
 
     def update(self, old_highlighted_line, new_highlighted_line):
+        # Sublime does not permit us to set foreground color of a region
+        # without simultaneously filling its background, so we do this
+        # gross workaround: paint the background to the color it would have
+        # been otherwise. Since selection erases foreground colors of regions
+        # as well, we do this only for regular and current line backgrounds.
+
         if old_highlighted_line is not None:
             depths = self.per_line_depths[old_highlighted_line]
             for depth, regions in enumerate(depths):
@@ -202,12 +208,6 @@ class Rainbowth(sublime_plugin.EventListener):
         if not view.settings().get('rainbowth.lispy'):
             return
         colors = view.settings().get('rainbowth.colors')
-
-        # Sublime does not permit us to set foreground color of a region
-        # without simultaneously filling its background, so we do this
-        # gross workaround: paint the background to the color it would have
-        # been otherwise. Since selection erases foreground colors of regions
-        # as well, we do this only for regular and current line backgrounds.
 
         if len(view.sel()) == 1 and view.sel()[0].a == view.sel()[0].b:
             highlighted_line, _ = view.rowcol(view.sel()[0].a)
