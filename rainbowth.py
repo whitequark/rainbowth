@@ -28,8 +28,7 @@ class ViewInfo:
             for depth, regions in enumerate(depths):
                 visible_regions = self.prepared_regions[self.keys_lineHighlight[depth]]
                 for region in regions:
-                    try: visible_regions.remove(region)
-                    except ValueError: pass
+                    visible_regions.remove(region)
                 self.prepared_regions[self.keys[depth]] += regions
 
         if new_highlighted_line is not None:
@@ -37,8 +36,7 @@ class ViewInfo:
             for depth, regions in enumerate(depths):
                 visible_regions = self.prepared_regions[self.keys[depth]]
                 for region in regions:
-                    try: visible_regions.remove(region)
-                    except ValueError: pass
+                    visible_regions.remove(region)
                 self.prepared_regions[self.keys_lineHighlight[depth]] += regions
 
     def highlight(self, view):
@@ -199,12 +197,16 @@ class Rainbowth(sublime_plugin.EventListener):
             if char in ')]': level -= 1
 
         self.view_infos[view.id()] = ViewInfo(len(colors), per_line_depths)
-        self.on_selection_modified(view, force=True)
+        view.settings().set('rainbowth.line', None)
+        self.on_selection_modified(view)
 
     def on_close(self, view):
+        if not view.settings().get('rainbowth.lispy'):
+            return
+
         del self.view_infos[view.id()]
 
-    def on_selection_modified(self, view, force=False):
+    def on_selection_modified(self, view):
         if not view.settings().get('rainbowth.lispy'):
             return
         colors = view.settings().get('rainbowth.colors')
@@ -215,7 +217,7 @@ class Rainbowth(sublime_plugin.EventListener):
             highlighted_line = None
 
         old_highlighted_line = int(view.settings().get('rainbowth.line') or "-1")
-        if old_highlighted_line == highlighted_line and not force:
+        if old_highlighted_line == highlighted_line:
             return
         view.settings().set('rainbowth.line', highlighted_line)
 
