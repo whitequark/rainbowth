@@ -137,7 +137,7 @@ class Rainbowth(sublime_plugin.EventListener):
         colors = palettes.get(scheme_name, palettes['default'])
 
         self.read_cache()
-        if colors == self.cache.get(scheme_name, None) and False:
+        if colors == self.cache.get(scheme_name, None):
             # Already updated.
             return colors
 
