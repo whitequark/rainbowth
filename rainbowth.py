@@ -36,7 +36,8 @@ class ViewInfo:
             for depth, regions in enumerate(depths):
                 visible_regions = self.prepared_regions[self.keys[depth]]
                 for region in regions:
-                    visible_regions.remove(region)
+                    if region in visible_regions: # FIXME: should be always true
+                        visible_regions.remove(region)
                 self.prepared_regions[self.keys_lineHighlight[depth]] += regions
 
     def highlight(self, view):
