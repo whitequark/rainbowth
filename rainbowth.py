@@ -211,6 +211,9 @@ class Rainbowth(sublime_plugin.EventListener):
         if not view.settings().get('rainbowth.lispy'):
             return
         colors = view.settings().get('rainbowth.colors')
+        
+        if not view.id() in self.view_infos:
+            return
 
         if len(view.sel()) == 1 and view.sel()[0].a == view.sel()[0].b:
             highlighted_line, _ = view.rowcol(view.sel()[0].a)
