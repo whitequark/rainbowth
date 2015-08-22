@@ -47,7 +47,7 @@ class ViewInfo:
                              scope=key, flags=sublime.DRAW_NO_OUTLINE)
 
 class Rainbowth(sublime_plugin.EventListener):
-    lispy_languages = ['lisp', 'scheme', 'clojure', 'clojurescript']
+    lispy_languages = ['lisp', 'scheme', 'clojure', 'clojurescript', 'hylang']
 
     cache_file_path = os.path.join(sublime.cache_path(), 'Rainbowth', 'Rainbowth.cache')
     if not os.path.exists(os.path.dirname(cache_file_path)):
