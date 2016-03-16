@@ -49,9 +49,12 @@ class ViewInfo:
 class Rainbowth(sublime_plugin.EventListener):
     lispy_languages = ['lisp', 'scheme', 'clojure', 'clojurescript', 'hylang']
 
-    cache_file_path = os.path.join(sublime.cache_path(), 'Rainbowth', 'Rainbowth.cache')
-    if not os.path.exists(os.path.dirname(cache_file_path)):
-        os.makedirs(os.path.dirname(cache_file_path))
+    @staticmethod
+    def cache_file_path():
+        result = os.path.join(sublime.cache_path(), 'Rainbowth', 'Rainbowth.cache')
+        if not os.path.exists(os.path.dirname(result)):
+            os.makedirs(os.path.dirname(result))
+        return result
 
     def __init__(self):
         self.cache = None
@@ -59,14 +62,14 @@ class Rainbowth(sublime_plugin.EventListener):
 
     def read_cache(self):
         if self.cache is None:
-            if os.path.exists(self.cache_file_path):
-                with open(self.cache_file_path, 'r') as cache_file:
+            if os.path.exists(self.cache_file_path()):
+                with open(self.cache_file_path(), 'r') as cache_file:
                     self.cache = json.load(cache_file)
             else:
                 self.cache = {}
 
     def write_cache(self):
-        with open(self.cache_file_path, 'w') as cache_file:
+        with open(self.cache_file_path(), 'w') as cache_file:
             json.dump(self.cache, cache_file)
 
     def current_color_scheme(self, view):
@@ -211,7 +214,7 @@ class Rainbowth(sublime_plugin.EventListener):
         if not view.settings().get('rainbowth.lispy'):
             return
         colors = view.settings().get('rainbowth.colors')
-        
+
         if not view.id() in self.view_infos:
             return
 
