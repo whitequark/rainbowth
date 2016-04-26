@@ -63,13 +63,13 @@ class Rainbowth(sublime_plugin.EventListener):
     def read_cache(self):
         if self.cache is None:
             if os.path.exists(self.cache_file_path()):
-                with open(self.cache_file_path(), 'r') as cache_file:
+                with open(self.cache_file_path(), 'r', 'utf-8') as cache_file:
                     self.cache = json.load(cache_file)
             else:
                 self.cache = {}
 
     def write_cache(self):
-        with open(self.cache_file_path(), 'w') as cache_file:
+        with open(self.cache_file_path(), 'w', 'utf-8') as cache_file:
             json.dump(self.cache, cache_file)
 
     def current_color_scheme(self, view):
