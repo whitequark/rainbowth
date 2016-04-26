@@ -85,17 +85,18 @@ class Rainbowth(sublime_plugin.EventListener):
         Apply a minimal change to `color`, which must be in CSS hex format,
         and return the modified color.
         """
-        if color[0] == '#' and len(color) in (4, 7):
-            # Normalize to 6-digit hex.
+        if color[0] == '#' and len(color) in (4, 7, 9):
+            # Normalize to 8-digit hex.
             color = re.sub('^#(.)(.)(.)$', r'#\1\1\2\2\3\3', color)
+            color = re.sub('^#(......)$',  r'#\1ff', color)
 
             # Perturb.
             color_value = int(color[1:], base=16)
-            if color_value < 0xffffff:
-                color_value += 1
+            if color_value & 0xff00 == 0xff00:
+                color_value -= 0x100
             else:
-                color_value -= 1
-            color = "#{:06x}".format(color_value)
+                color_value += 0x100
+            color = "#{:08x}".format(color_value)
 
         return color
 
@@ -148,6 +149,8 @@ class Rainbowth(sublime_plugin.EventListener):
         if colors == self.cache.get(scheme_name, None):
             # Already updated.
             return colors
+
+        print("Rainbowth: color scheme needs updating")
 
         # Not updated; do it!
         with codecs.open(scheme_path, 'r', 'utf-8') as scheme_file:
