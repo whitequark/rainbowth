@@ -1,4 +1,5 @@
 {
+  "languages": ["lisp", "scheme", "clojure", "clojurescript", "hylang"],
   "palettes":
   {
     "default": ["red", "orange", "yellow", "green", "blue", "indigo", "violet"],
