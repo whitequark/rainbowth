@@ -47,8 +47,6 @@ class ViewInfo:
                              scope=key, flags=sublime.DRAW_NO_OUTLINE)
 
 class Rainbowth(sublime_plugin.EventListener):
-    lispy_languages = ['lisp', 'scheme', 'clojure', 'clojurescript', 'hylang']
-
     @staticmethod
     def cache_file_path():
         result = os.path.join(sublime.cache_path(), 'Rainbowth', 'Rainbowth.cache')
@@ -63,13 +61,13 @@ class Rainbowth(sublime_plugin.EventListener):
     def read_cache(self):
         if self.cache is None:
             if os.path.exists(self.cache_file_path()):
-                with open(self.cache_file_path(), 'r', 'utf-8') as cache_file:
+                with codecs.open(self.cache_file_path(), 'r', 'utf-8') as cache_file:
                     self.cache = json.load(cache_file)
             else:
                 self.cache = {}
 
     def write_cache(self):
-        with open(self.cache_file_path(), 'w', 'utf-8') as cache_file:
+        with codecs.open(self.cache_file_path(), 'w', 'utf-8') as cache_file:
             json.dump(self.cache, cache_file)
 
     def current_color_scheme(self, view):
@@ -183,7 +181,9 @@ class Rainbowth(sublime_plugin.EventListener):
         return False
 
     def on_activated_async(self, view):
-        view.settings().set('rainbowth.lispy', self.is_written_in(view, self.lispy_languages))
+        settings = sublime.load_settings('Rainbowth.sublime-settings')
+        languages = settings.get('languages')
+        view.settings().set('rainbowth.lispy', self.is_written_in(view, languages))
         if view.settings().get('rainbowth.lispy'):
             colors = self.update_color_scheme(view)
             view.settings().set('rainbowth.colors', colors)
