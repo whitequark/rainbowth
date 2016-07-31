@@ -196,12 +196,12 @@ class Rainbowth(sublime_plugin.EventListener):
 
         level = -1
         per_line_depths = defaultdict(lambda: [[] for _ in range(len(colors))])
-        for region in view.find_all('[\[\]()]'):
+        for region in view.find_all('[\[\]()\{\}]'):
             char = view.substr(region)
             line, _ = view.rowcol(region.a)
-            if char in '([': level += 1
+            if char in '([{': level += 1
             per_line_depths[line][level % len(colors)].append(region)
-            if char in ')]': level -= 1
+            if char in ')]}': level -= 1
 
         self.view_infos[view.id()] = ViewInfo(len(colors), per_line_depths)
         view.settings().set('rainbowth.line', None)
