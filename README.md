@@ -36,7 +36,8 @@ Highlighting for a given language can be enabled (or disabled) by updating the `
 ```
 {
   "languages": ["lisp", "scheme", "clojure", "clojurescript", "hylang"]
-}```
+}
+```
 
 ### Contributing
 
