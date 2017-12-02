@@ -194,9 +194,21 @@ class Rainbowth(sublime_plugin.EventListener):
             return
         colors = view.settings().get('rainbowth.colors')
 
+        settings = sublime.load_settings('Rainbowth.sublime-settings')
+        customRegex = settings.get('custom_regex')
+        if customRegex.enable:
+          regex = customRegex.prefix+customRegex.suffix
+          print(regex)
+        else:
+          disableString = settings.get('disable_inside_string')
+          if disableString: 
+            regex = '[()\[\]{}](?=([^"]*"[^"]*")*[^"]*$)'
+          else:
+            regex = '[\[\]()\{\}]'
+
         level = -1
         per_line_depths = defaultdict(lambda: [[] for _ in range(len(colors))])
-        for region in view.find_all('[\[\]()\{\}]'):
+        for region in view.find_all(regex):
             char = view.substr(region)
             line, _ = view.rowcol(region.a)
             if char in '([{': level += 1

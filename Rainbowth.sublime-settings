@@ -5,5 +5,7 @@
     "default": ["red", "orange", "yellow", "green", "blue", "indigo", "violet"],
     "Tomorrow Night": ["#c66", "#de935f", "#ee6", "#b5bd68", "#81a2be", "#b294bb", "#ff69b4", "#8a2be2"],
     "Monokai": ["#AE81FF", "#66D9EF", "#A6E22E", "#FD971F", "#F92672"]
-  }
+  },
+  //  Toggle whether strings should be ignored. Default: false
+  "disable_inside_string": false
 }
