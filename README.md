@@ -15,9 +15,13 @@ It took about three hours for Racket to grow on me. I know with a fair amount of
 
 Install Rainbowth via [Package Control](https://packagecontrol.io/packages/Rainbowth), or clone this repository directly into your Packages directory.
 
+### Setup
+
 The color scheme must be unpacked in the user's `Packages` folder and writable for Rainbowth to be able to automatically insert its palette.
 
 The default themes can be located in the `Color Scheme - Default.sublime-package` (or `Color Scheme - Legacy.sublime-package` on newer Sublime Text installations) file in the Sublime Text installation folder. Use a zip archive manager to extract the `.tmTheme` file corresponding to the theme you like. There is currently no support for the new `.sublime-color-scheme` file format.
+
+* [Step-by-step setup instructions](Setup-Instructions.md)
 
 ### Configuration
 
