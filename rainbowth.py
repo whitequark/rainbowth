@@ -175,7 +175,8 @@ class Rainbowth(sublime_plugin.EventListener):
 
     def is_written_in(self, view, languages):
         scope_names = view.scope_name(0).split(' ')
-        for language in ["source.{}".format(lang) for lang in languages]:
+        for language in [scope.format(lang) for lang in languages 
+                         for scope in ["source.{}", "text.{}", "text.tex.{}"]]:
             if language in scope_names:
                 return True
         return False
