@@ -184,7 +184,10 @@ class Rainbowth(sublime_plugin.EventListener):
     def on_activated_async(self, view):
         settings = sublime.load_settings('Rainbowth.sublime-settings')
         languages = settings.get('languages')
-        view.settings().set('rainbowth.lispy', self.is_written_in(view, languages))
+        lispy = self.is_written_in(view, languages)
+        if settings.get('language_mode') == 'exclude':
+            lispy = not lispy
+        view.settings().set('rainbowth.lispy', lispy)
         if view.settings().get('rainbowth.lispy'):
             colors = self.update_color_scheme(view)
             view.settings().set('rainbowth.colors', colors)

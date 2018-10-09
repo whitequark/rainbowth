@@ -37,10 +37,11 @@ The `palettes` setting is a mapping of theme names to the list of colors to use 
 }
 ```
 
-Highlighting for a given language can be enabled (or disabled) by updating the `languages` setting.
+The `languages` setting is list of languages included (or excluded if `language_mode` setting is set to 'exclude') in highlighting.
 
 ```
 {
+  "language_mode": "include",
   "languages": ["lisp", "scheme", "clojure", "clojurescript", "hylang"]
 }
 ```
