@@ -185,7 +185,7 @@ class Rainbowth(sublime_plugin.EventListener):
         settings = sublime.load_settings('Rainbowth.sublime-settings')
         languages = settings.get('languages')
         lispy = self.is_written_in(view, languages)
-        if settings.get('language_mode') == 'exclude':
+        if settings.get('exclude_languages'):
             lispy = not lispy
         view.settings().set('rainbowth.lispy', lispy)
         if view.settings().get('rainbowth.lispy'):

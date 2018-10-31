@@ -37,7 +37,7 @@ The `palettes` setting is a mapping of theme names to the list of colors to use 
 }
 ```
 
-The `languages` setting is list of languages included (or excluded if `language_mode` setting is set to 'exclude') in highlighting.
+The `languages` setting is list of languages included (or excluded if `exclude_languages` setting is set to true) in highlighting.
 
 ```
 {
