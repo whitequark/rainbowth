@@ -1,21 +1,33 @@
 {
-  "languages": ["lisp", "scheme", "clojure", "clojurescript", "hylang"],
-  "palettes":
-  {
-    "default": ["red", "orange", "yellow", "green", "blue", "indigo", "violet"],
-    "Tomorrow Night": ["#c66", "#de935f", "#ee6", "#b5bd68", "#81a2be", "#b294bb", "#ff69b4", "#8a2be2"],
-    "Monokai": ["#AE81FF", "#66D9EF", "#A6E22E", "#FD971F", "#F92672"]
-  },
-  //  Toggle whether languages from list are excluded or included. Default: false
-  "exclude_languages": false,
-  //  Toggle whether strings should be ignored. Default: false
-  "disable_inside_string": false,
-  // Enables custom pre- and suffixes. Currently only single character 'fixes.
-  "custom_signs": 
-  {
-    "enabled": false,
+    // Do not change these settings
+    // Change the user settings (Packages/User/Rainbowth.sublime-settings) instead.
+    //
+    // If it does not work yet:
+    //     Extract your theme to your `Package` folder.
+    //     Instructions here: https://github.com/whitequark/rainbowth#setup
+    //
+
+    "languages": ["lisp", "scheme", "clojure", "clojurescript", "hylang"],
+
+    "palettes": {
+        "default": ["red", "orange", "yellow", "green", "blue", "indigo", "violet"],
+        "Tomorrow Night": ["#c66", "#de935f", "#ee6", "#b5bd68", "#81a2be", "#b294bb", "#ff69b4", "#8a2be2"],
+        "Monokai": ["#AE81FF", "#66D9EF", "#A6E22E", "#FD971F", "#F92672"]
+    },
+
+    // Toggle whether languages from list are excluded or included. Default: false
+    "exclude_languages": false,
+
+    // Toggle whether strings should be ignored. Default: false
+    "disable_inside_string": false,
+
+    // Enables custom pre- and suffixes. Currently only single character 'fixes.
     // Note: Characters cannot appear in both the prefix and the suffix (Which only makes sense, doesn't it?)
-    "prefix": "({[",
-    "suffix": ")}]"
-  }    
+    // Default prefix and suffix are just () and [].
+    "custom_signs":
+    {
+        "enabled": false,
+        "prefix": "({[",
+        "suffix": ")}]"
+    }
 }
