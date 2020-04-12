@@ -21,6 +21,9 @@
     // Toggle whether strings should be ignored. Default: false
     "disable_inside_string": false,
 
+    // Toggle whether comments should be ignored. Default: false
+    "disable_inside_comment": false,
+
     // Enables custom pre- and suffixes. Currently only single character 'fixes.
     // Note: Characters cannot appear in both the prefix and the suffix (Which only makes sense, doesn't it?)
     // Default prefix and suffix are just () and [].
