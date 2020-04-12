@@ -200,31 +200,40 @@ class Rainbowth(sublime_plugin.EventListener):
 
         settings = sublime.load_settings('Rainbowth.sublime-settings')
         customSigns = settings.get('custom_signs')
+
         if customSigns['enabled']:
           prefix = customSigns['prefix'] 
           suffix = customSigns['suffix']
-          regex = prefix + suffix
-          print(regex)
         else:
           prefix = '(['
           suffix = ')]'
 
         disableString = settings.get('disable_inside_string')
-        if disableString: 
-          # regex = '[()\[\]{}](?=([^"\']*["\'][^"\']*["\'])*[^"\']*$)'
-          regex = '['+re.escape(prefix) + re.escape(suffix)+'](?=([^"\']*["\'][^"\']*["\'])*[^"\']*$)'
-        else:
-          # regex = '[\[\]\{\}()]'
-          regex = '['+re.escape(prefix) + re.escape(suffix)+']'
+        disableComment = settings.get('disable_inside_comment')
+        regex = '['+re.escape(prefix) + re.escape(suffix)+']'
+
+        badRegions = []
+        if(disableComment):
+            badRegions.extend(view.find_by_selector("comment"))
+        if(disableString):
+            badRegions.extend(view.find_by_selector("string"))
 
         level = -1
         per_line_depths = defaultdict(lambda: [[] for _ in range(len(colors))])
         for region in view.find_all(regex):
-            char = view.substr(region)
-            line, _ = view.rowcol(region.a)
-            if char in prefix: level += 1
-            per_line_depths[line][level % len(colors)].append(region)
-            if char in suffix: level -= 1
+            skip = False
+            for badRegion in badRegions:
+                if badRegion.contains(region):
+                    skip = True
+                if badRegion.contains(region):
+                    skip = True
+
+            if not skip:
+                char = view.substr(region)
+                line, _ = view.rowcol(region.a)
+                if char in prefix: level += 1
+                per_line_depths[line][level % len(colors)].append(region)
+                if char in suffix: level -= 1
 
         self.view_infos[view.id()] = ViewInfo(len(colors), per_line_depths)
         view.settings().set('rainbowth.line', None)
